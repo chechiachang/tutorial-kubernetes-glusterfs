@@ -14,8 +14,8 @@ GLUSTERFS_MINION_DEVICE = "/dev/sdb"
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "ubuntu/xenial64"
-  config.vm.box_version = "20180126.0.0"
+  config.vm.box = "linkernetworks/aurora-base"
+  config.vm.box_version = "0.0.5"
 
   config.vm.box_check_update = false
   config.vbguest.auto_update = false

@@ -1,6 +1,14 @@
 Kubernetes Storage and GlusterFS
 ===
 
+#  
+
+Docker Storage
+
+Kubernetes Storage
+
+GlusterFS for K8s
+
 # Docker Storage
 
 https://docs.docker.com/storage/
@@ -18,9 +26,8 @@ https://docs.docker.com/storage/
 
 2. Docker volume
   * a directory on host
-
-bind mounts vs volume
-
+  * prepare: provision on host
+  * usage: set volume on docker run
 
 # Kubernetes Storage
 
@@ -40,47 +47,78 @@ pod.spec.volumes
 
 pod.spec.containers.volumeMounts
 
-(Some of) Types of volumes:
+(Some of) Types of volumes :
   * emptyDir
     - first created volume
-
-  * configMap
-    - storage config data
+    - prepare: none
+    - usage: always
 
   * gcePersistentDisk
     - independent to pod
+    - prepare: gcp
+    - usage: claim by name
 
+    ```
     gcloud compute disks create --size=500GB --zone=us-central1-a my-data-disk
-
-  * hostPath
+    ```
 
   * PersistentVolumeClaim
+    - prepare: provision by admin
+    - usage: add PVC request
 
-  https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 
-  https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
+  [Example](https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/)
 
-    - PV: a piece of provisioned storage (abstract)
+### PersistentVolume 
+  
+  [Doc](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+
+    - a piece of provisioned storage
     - Independent lifecycle
-    - PV subsystem API handles details of implementation: like NFS
+    - abstract with k8s object API
+    - many implementations: ex. GCEPersistentDisk, NFS, GlusterFS...
+
+  * Why PersistentVolume
+    - one APIs, many PV implementations
     - Separates providers (admin) and consumers (users)
-
+    - PV subsystem API handles details of implementation
+    - Handle different need like size, access mode, performance...
+  
+  * PersistentVolumeClaim
+    - PV: a resource 
     - PVC: a request for storage
-    - PVCs consume PV resources and Pods consume Node resources
+    - Pods consume Node resources and PVCs consume PV resources 
 
-    - Request size, access mode, performance...
-    - StorageClass resource
+  * PVC lifecycle
+    - Povisioning
+    - Binding
+    - Using
+    - Reclaiming
+    - Deleting
 
-  * Container storage interface
+  * PV Access Modes
+    - ReadWriteOnce: 1 node R/W
+    - ReadOnlyMany: n node R, 1 node W
+    - ReadWriteMany: n node R/W
 
+  * StorageClass
+    - 
+    - usage:PV.storageClassName
 
-Persistent volume
+  [Doc](https://kubernetes.io/docs/concepts/storage/storage-classes/)
 
-
-# Glusterfs
+# GlusterFS
 
   * On pod delete: unmount
 
     networked filesystem
 
+# GlusterFS for k8s
 
+  * Heketi
+    - REST storage management API
+
+# Demo  
+
+  * Env
+    - Kubernetes 1.9.2
